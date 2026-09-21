@@ -62,28 +62,39 @@ public class lab1p1 {
     }
 
     public static void frequencyTest(ArrayList<Integer> subsequence) {
-        HashMap<Integer, Integer> map = new HashMap<>();
-        for (int i = 0; i < subsequence.size(); i++) {
-            int num = subsequence.get(i);
-            map.put(num, map.getOrDefault(num, 0) + 1);
+        if (subsequence == null || subsequence.size() < 2) {
+            System.out.println("Недостаточно элементов для анализа пар (нужно минимум 2).");
+            return;
         }
-        System.out.println("Частоты: " + map);
 
-        // Среднее
-        double sum = 0;
-        for (int num : subsequence) {
-            sum += num;
+        Map<String, Integer> pairMap = new HashMap<>();
+
+        int totalPairs = subsequence.size() - 1;
+
+        for (int i = 0; i < totalPairs; i++) {
+            int current = subsequence.get(i);
+            int next = subsequence.get(i + 1);
+
+            String pairKey = current + "->" + next;
+            pairMap.put(pairKey, pairMap.getOrDefault(pairKey, 0) + 1);
         }
-        double avg = sum / subsequence.size();
-        System.out.println("Среднее: " + avg);
 
-        // Дисперсия
+        System.out.println("Частоты пар (текущее -> следующее): " + pairMap);
+
+        double sumDiff = 0;
+        for (int i = 0; i < totalPairs; i++) {
+            sumDiff += (subsequence.get(i + 1) - subsequence.get(i));
+        }
+        double avgDiff = sumDiff / totalPairs;
+        System.out.println("Средняя разность переходов (Next - Curr): " + avgDiff);
+
         double varianceSum = 0;
-        for (int num : subsequence) {
-            varianceSum += Math.pow(num - avg, 2);
+        for (int i = 0; i < totalPairs; i++) {
+            double diff = subsequence.get(i + 1) - subsequence.get(i);
+            varianceSum += Math.pow(diff - avgDiff, 2);
         }
-        double variance = varianceSum / subsequence.size();
-        System.out.println("Дисперсия: " + variance);
+        double variance = varianceSum / totalPairs;
+        System.out.println("Дисперсия разностей переходов: " + variance);
     }
 
     /**
@@ -136,7 +147,7 @@ public class lab1p1 {
     }
 
     public static void main(String[] args) {
-        int paramN = 256;
+        int paramN = 16;
         ArrayList<Integer> subsequence = generator(9, 14, paramN, 1, 100);
 
         periodTest(subsequence);
